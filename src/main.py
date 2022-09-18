@@ -57,27 +57,11 @@ if __name__ == "__main__":
     pygame.init()
     pygame.font.init()
 
-    #state = GameState()
-
     game = SimpleGame()
-
     game.init()
 
     while 1:
         game.loop()
-
-    # for _ in range(10):
-
-    #     i = 0
-    #     start = time.perf_counter()
-    #     while i < 1000:
-    #         i += 1
-    #         delta = 1
-    #         #delta = state.clock.tick(30.0) / 1000.0
-    #         user_input(state)
-    #         update_game(delta, state)
-    #         #draw_game(state)
-    #     print(time.perf_counter() - start)
 
     pygame.quit()
     

@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 from noise.perlin import PerlinNoiseFactory
 from spritesheet.spritesheet import SpriteSheet
+from spritesheet.image import load_image
 
 
 class Tile(Sprite):
@@ -15,11 +16,7 @@ class Tile(Sprite):
         Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect()
-        self.position = np.array([x, y])
-
-    def update(self, delta):
-        self.rect.topleft = self.position
-
+        self.rect.topleft = (x, y)
 
 class TileMap(Group):
 
@@ -28,6 +25,34 @@ class TileMap(Group):
         self.width = width
         self.height = height
         self.tile_size = tile_size
+
+    def random(self):
+        tile_dims = (self.tile_size, self.tile_size)
+
+        water_tile = load_image("assets/nature_tileset/sprite_015.png", scale=tile_dims)
+        grass_tile = load_image("assets/nature_tileset/sprite_019.png", scale=tile_dims)
+        dirt_tile = load_image("assets/nature_tileset/sprite_021.png", scale=tile_dims)
+
+        def get_image(bin):
+            if bin == 1:
+                return water_tile
+            elif bin == 2:
+                return grass_tile
+            elif bin == 3:
+                return dirt_tile
+
+        tiles = []
+        for x in range(int(self.width/self.tile_size)):
+            for y in range(int(self.height/self.tile_size)):
+                tiles.append(Tile(
+                    x*self.tile_size,
+                    y*self.tile_size,
+                    get_image(random.randint(1, 3))
+                ))
+
+        for sprite in tiles:
+            self.add(sprite)
+
 
     def generate(self):
 
@@ -62,13 +87,11 @@ class TileMap(Group):
         
         bins = np.digitize(tiles, fields)
 
-        ss = SpriteSheet("assets/nature_tileset.png", (64, 64))
+        tile_dims = (self.tile_size, self.tile_size)
 
-        pygame.transform.scale(ss.image_at((0, 3)), (16, 16))
-
-        grass_tile = pygame.transform.scale(ss.image_at((0, 3)), (16, 16))
-        water_tile = pygame.transform.scale(ss.image_at((1, 3)), (16, 16))
-
+        water_tile = load_image("assets/nature_tileset/sprite_015.png", scale=tile_dims)
+        grass_tile = load_image("assets/nature_tileset/sprite_019.png", scale=tile_dims)
+        dirt_tile = load_image("assets/nature_tileset/sprite_021.png", scale=tile_dims)
 
         def get_image(bin):
             if bin == 1:
@@ -76,17 +99,16 @@ class TileMap(Group):
             elif bin == 2:
                 return grass_tile
             elif bin == 3:
-                return water_tile
+                return dirt_tile
 
         tiles = []
-        for x in range(int(self.width/self.tile_size)):
-            for y in range(int(self.height/self.tile_size)):
+        for x in range(int(gx/self.tile_size)):
+            for y in range(int(gy/self.tile_size)):
                 tiles.append(Tile(
                     x*self.tile_size,
                     y*self.tile_size,
-                    get_image(bins[x,y])
+                    get_image(bins[x, y])
                 ))
 
         for sprite in tiles:
             self.add(sprite)
-

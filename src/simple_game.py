@@ -1,16 +1,19 @@
 from typing import Tuple
 
+
 import pygame
 import pygame.gfxdraw
 import pygame_gui
 import pymunk
 import pymunk.pygame_util
+import numpy as np
 
 from swarm import Swarm
 from player import Player
-from swarm.util import B
 from tiles.tile import TileMap
-import grid
+from camera import Camera2D
+from terrian import Terrian
+import constants
 
 class SimpleGame:
 
@@ -26,7 +29,7 @@ class SimpleGame:
 
         self.clock = pygame.time.Clock()
         self.display_size = (1280, 720)
-        self.background = pygame.Surface(self.display_size)
+        self.background = pygame.Surface((constants.WORLD_CHUNK_SIZE, constants.WORLD_CHUNK_SIZE))
         self.background.fill(pygame.Color('#000000'))
 
         pygame.display.set_caption('Evo Simulator')
@@ -52,9 +55,14 @@ class SimpleGame:
         self.current_fps = 0.0
         self.delta = 0.0
 
-        self.swarm = Swarm(100)
-        self.player = Player(100, 100)
-        self.tile_map = TileMap(self.display_size[0], self.display_size[1], 16)
+        self.swarm = Swarm(1000)
+        
+        self.terrian = Terrian(generate_method='perlin')
+
+        #self.tile_map = TileMap(self.display_size[0], self.display_size[1], 16)
+
+        self.player = Player(self.display_size[0]/2, self.display_size[1]/2)
+        self.camera = Camera2D(0.0, 0.0)
 
         # self.gl_context = mgl.create_context(standalone=True)
         # self.gl_context.enable(mgl.BLEND)
@@ -65,7 +73,8 @@ class SimpleGame:
     
     def init(self):
         print('init')
-        self.tile_map.generate()
+        self.terrian.generate_chunks(np.array([1, 1]))
+        #self.tile_map.random()
         print('init complete')
 
 
@@ -78,30 +87,38 @@ class SimpleGame:
     def input(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pass
+                exit()
 
             elif event.type == pygame_gui.UI_BUTTON_PRESSED:
                 pass
         
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
-                    self.player.velocity.y = -5
+                    self.camera.velocity[1] = 5.0
+                    self.player.velocity[1] = -5.0
                 elif event.key == pygame.K_s:
-                    self.player.velocity.y = 5
+                    self.camera.velocity[1] = -5.0
+                    self.player.velocity[1] = 5.0
                 elif event.key == pygame.K_a:
-                    self.player.velocity.x = -5
+                    self.camera.velocity[0] = 5.0
+                    self.player.velocity[0] = -5.0
                 elif event.key == pygame.K_d:
-                    self.player.velocity.x = 5
+                    self.camera.velocity[0] = -5.0
+                    self.player.velocity[0] = 5.0
             
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_w:
-                    self.player.velocity.y = 0
+                    self.camera.velocity[1] = 0.0
+                    self.player.velocity[1] = 0.0
                 elif event.key == pygame.K_s:
-                    self.player.velocity.y = 0
+                    self.camera.velocity[1] = 0.0
+                    self.player.velocity[1] = 0.0
                 elif event.key == pygame.K_a:
-                    self.player.velocity.x = 0
+                    self.camera.velocity[0] = 0.0
+                    self.player.velocity[0] = 0.0
                 elif event.key == pygame.K_d:
-                    self.player.velocity.x = 0
+                    self.camera.velocity[0] = 0.0
+                    self.player.velocity[0] = 0.0
     
             self.ui_manager.process_events(event)
 
@@ -109,24 +126,37 @@ class SimpleGame:
     def update(self) -> None:
         self.current_fps = self.clock.tick(self.target_fps)
         self.delta = 1 - (self.current_fps / 1000.0)
-        self.space.step(self.delta)
-        self.ui_manager.update(self.delta)
-        self.swarm.update(self.delta)
+        #self.space.step(self.delta)
+        #self.ui_manager.update(self.delta)
+        #self.swarm.update(self.delta)
         self.player.update(self.delta)
-        self.tile_map.update(self.delta)
+        #self.tile_map.update(self.delta)
+        self.camera.update(self.delta)
+
+        if self.player.changed_chunk():
+            self.player.previous_chunk_position = self.player.chunk_position
+            self.terrian.generate_chunks(self.player.chunk_position)
 
 
     def draw(self) -> None:
-        self.screen.blit(self.background, (0, 0))
-        self.tile_map.draw(self.screen)
-        #grid.draw_grid(self.screen, self.display_size[0], self.display_size[1], 16, (0, 0, 255))
-        self.ui_manager.draw_ui(self.screen)
-        #self.space.debug_draw(self.space_draw_options)
-        self.swarm.draw(self.screen)
-        self.player.draw(self.screen)
+        self.screen.fill((0, 0, 0))
+        #self.background.fill((0, 0, 0))
 
-        text = self.font.render(f'FPS: {self.current_fps:.2f}', True, (255, 255, 255))
+        self.terrian.draw(self.background)
+        #self.tile_map.draw(self.background)
+        #grid.draw_grid(self.screen, self.display_size[0], self.display_size[1], 16, (0, 0, 255))
+        #self.ui_manager.draw_ui(self.background)
+        #self.space.debug_draw(self.space_draw_options)
+        #self.swarm.draw(self.background)
+        self.player.draw(self.background)
+
+        self.screen.blit(self.background, (self.camera.position[0], self.camera.position[1]))
+
+        text = self.font.render(f'FPS: {self.current_fps}', True, (255, 255, 255))
         self.screen.blit(text, (10, 10))
 
-        pygame.display.update()
+        text = self.font.render(f'Chunk: {self.player.chunk_position}', True, (255, 255, 255))
+        self.screen.blit(text, (10, 20))
+
+        pygame.display.flip()
 
