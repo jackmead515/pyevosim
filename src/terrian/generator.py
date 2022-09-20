@@ -108,6 +108,8 @@ class TerrianGenerator:
                 if chunk_id == 0:
                     chunk = Chunk(np.array([cx, cy]))
 
+                    print(f"generating {chunk}")
+
                     chx = (cx * constants.CHUNK_SIZE * constants.TILE_SIZE)
                     chy = (cy * constants.CHUNK_SIZE * constants.TILE_SIZE)
                     

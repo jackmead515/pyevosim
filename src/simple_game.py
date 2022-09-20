@@ -57,7 +57,10 @@ class SimpleGame:
 
         self.swarm = Swarm(1000)
         
-        self.terrian = Terrian(generate_method='perlin')
+        self.terrian = Terrian(
+            generate_method='perlin',
+            chunk_window_size=5
+        )
 
         #self.tile_map = TileMap(self.display_size[0], self.display_size[1], 16)
 
@@ -73,7 +76,7 @@ class SimpleGame:
     
     def init(self):
         print('init')
-        self.terrian.generate_chunks(np.array([1, 1]))
+        self.terrian.generate_chunks(self.player.chunk_position)
         #self.tile_map.random()
         print('init complete')
 
@@ -128,7 +131,7 @@ class SimpleGame:
         self.delta = 1 - (self.current_fps / 1000.0)
         #self.space.step(self.delta)
         #self.ui_manager.update(self.delta)
-        #self.swarm.update(self.delta)
+        self.swarm.update(self.delta)
         self.player.update(self.delta)
         #self.tile_map.update(self.delta)
         self.camera.update(self.delta)
@@ -147,7 +150,7 @@ class SimpleGame:
         #grid.draw_grid(self.screen, self.display_size[0], self.display_size[1], 16, (0, 0, 255))
         #self.ui_manager.draw_ui(self.background)
         #self.space.debug_draw(self.space_draw_options)
-        #self.swarm.draw(self.background)
+        self.swarm.draw(self.background)
         self.player.draw(self.background)
 
         self.screen.blit(self.background, (self.camera.position[0], self.camera.position[1]))

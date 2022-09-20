@@ -22,6 +22,8 @@ class Chunk:
     def get_chunk_position(self) -> np.array:
         return self.chunk_position
 
+    def get_world_position(self) -> np.array:
+        return self.chunk_position * constants.CHUNK_SIZE * constants.TILE_SIZE
 
     def iter_tiles(self):
         """

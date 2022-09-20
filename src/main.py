@@ -1,16 +1,16 @@
-from ast import Sub
-from dataclasses import dataclass
-from typing import List, Tuple
-import time
+# from ast import Sub
+# from dataclasses import dataclass
+# from typing import List, Tuple
+# import time
 
-import pygame
-import pygame.gfxdraw
-import pygame_gui
-import pymunk
-import pymunk.pygame_util
-import numpy as np
+# import pygame
+# import pygame.gfxdraw
+# import pygame_gui
+# import pymunk
+# import pymunk.pygame_util
+# import numpy as np
 
-from simple_game import SimpleGame
+# from simple_game import SimpleGame
 
 
 # def user_input(state: GameState):
@@ -52,17 +52,65 @@ from simple_game import SimpleGame
 #     pygame.display.update()
 
 
+# if __name__ == "__main__":
+
+#     pygame.init()
+#     pygame.font.init()
+
+#     game = SimpleGame()
+#     game.init()
+
+#     while 1:
+#         game.loop()
+
+#     pygame.quit()
+
+
+# self.gui_batch = pg.graphics.Batch()
+
+# depressed = pg.resource.image('assets/nature_tileset/sprite_000.png')
+# pressed = pg.resource.image('assets/nature_tileset/sprite_001.png')
+
+# self.button = pg.gui.ToggleButton(100, 400, pressed=pressed, depressed=depressed, batch=self.gui_batch)
+
+# self.frame = pg.gui.Frame(self.window, order=4)
+# self.frame.add_widget(self.button)
+
+# img = pg.resource.image('assets/nature_tileset/sprite_005.png')
+#         img.anchor_x = img.width // 2
+#         img.anchor_y = img.height // 2
+#         self.sprite = Sprite(img, x=32, y=32)
+
+import pyglet as pg
+
+from textures import texture_manager
+from game import Game
+
 if __name__ == "__main__":
 
-    pygame.init()
-    pygame.font.init()
+    texture_manager.load()
 
-    game = SimpleGame()
+    game = Game()
+
     game.init()
 
-    while 1:
-        game.loop()
+    @game.window.event
+    def on_draw():
+        game.draw()
 
-    pygame.quit()
+    @game.window.event
+    def on_key_press(symbol, modifiers):
+        game.on_key_press(symbol, modifiers)
+
+    @game.window.event
+    def on_key_release(symbol, modifiers):
+        game.on_key_release(symbol, modifiers)
     
+    @game.window.event
+    def on_mouse_scroll(x, y, scroll_x, scroll_y):
+        print(x, y, scroll_x, scroll_y)
+        game.on_mouse_scroll(x, y, scroll_x, scroll_y)
+
+    pg.clock.schedule_interval(game.update, 1 / 30.0)
+    pg.app.run()
 

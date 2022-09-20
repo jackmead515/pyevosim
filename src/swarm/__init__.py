@@ -1,9 +1,6 @@
 import random
 
-import pygame
-from pygame import Vector2
-from pygame.sprite import Sprite, Group
-import pymunk
+import pyglet as pg
 
 import numpy as np
 
@@ -12,13 +9,11 @@ from swarm.util import get_swarm_force, standard_fitness
 def random_color():
     return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
-class Particle(Sprite):
 
-    def __init__(self, x, y, width, height, color):
-        Sprite.__init__(self)
-        self.image = pygame.Surface((width, height))
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
+class Particle():
+
+    def __init__(self, sprite, x, y):
+        self.sprite = sprite
         self.position = np.array([x, y])
         self.best_position = self.position
         self.best_value = float('inf')
@@ -26,31 +21,32 @@ class Particle(Sprite):
 
     def update(self, delta):
         self.position += self.velocity*delta
-        self.rect.center = self.position
+        self.sprite.x = self.position[0]
+        self.sprite.y = self.position[1]
 
 
-class Swarm(Group):
+class Swarm():
 
     def __init__(self, num_particles):
-        Group.__init__(self)
-
         self.num_particles = num_particles
         self.global_best_position = np.array([random.random()*50, random.random()*50])
         self.global_best_value = float('inf')
         self.iterator = 0
-
         self.target = np.array([500, 300])
-
         self.particles = []
-        for i in range(num_particles):
-            self.particles.append(Particle(
+        self.batch = pg.graphics.Batch()
+        self.speed = 10
+
+        for _ in range(num_particles):
+            c = pg.shapes.Circle(
                 np.random.randint(500, 800)*1.0,
                 np.random.randint(500, 600)*1.0,
-                2, 2, random_color()
-            ))
-        
-        for sprite in self.particles:
-            self.add(sprite)
+                2,
+                color=random_color(),
+                batch=self.batch
+            )
+
+            self.particles.append(Particle(c, c.x, c.y))
 
 
     def set_best_values(self):
@@ -86,10 +82,9 @@ class Swarm(Group):
 
             particle.velocity += force*delta
             particle.velocity /= np.linalg.norm(particle.velocity)
-            particle.velocity *= 5
+            particle.velocity *= self.speed
 
             particle.update(delta)
     
-    # def draw(self, screen):
-    #     #pygame.draw.circle(screen, (0, 255, 0), self.target, 5)
-    #     super().draw(screen)
+    def draw(self):
+        self.batch.draw()

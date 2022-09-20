@@ -6,8 +6,8 @@ import numpy as np
 from tqdm import tqdm
 
 from noise.perlin import PerlinNoiseFactory
-from spritesheet.spritesheet import SpriteSheet
-from spritesheet.image import load_image
+from sprites.spritesheet import SpriteSheet
+from sprites.image import load_image
 
 
 class Tile(Sprite):

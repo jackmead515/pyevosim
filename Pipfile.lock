@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "65898fb56bb2b33ad9c25b07ec24ba19c3291bd04b35c5487f6fad5a438a44a1"
+            "sha256": "d3f9b2c1cd6a4070b75c927c54c220ddbc8c64b35bd4242b5133fe165fde5703"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -227,11 +227,10 @@
         },
         "moderngl-window": {
             "hashes": [
-                "sha256:5f2aaa6ae8d8a40fcd877febaf7494229c2bf1ef01d3fa9faa3a342075d4126a",
-                "sha256:691de764640b87af3d851257be544e1cafddb9cfa47cb144d0c1f1a0ed0a3936"
+                "sha256:19aca4048ca037bd9f2ca8b154ac15d07e90a05ad2d5fce32d746be8ffcc319d"
             ],
             "index": "pypi",
-            "version": "==2.4.1"
+            "version": "==2.4.2"
         },
         "multipledispatch": {
             "hashes": [
@@ -453,10 +452,11 @@
         },
         "pyglet": {
             "hashes": [
-                "sha256:529b7b1198df3a8399b9621a99ca5e29cd32bb98428bd0e8ba699afa4ba96d2b",
-                "sha256:ee8c5e0b5b87df84188e20e552982eba8da00944b4c5560f1cfdd5c9714d19b0"
+                "sha256:24724841fae19c8060c349f2ae470ed49df3dca4bef1ba7fa6050b9b4bd77d74",
+                "sha256:bdf709d46a97c50817a17492aac8467056753ebd4fbf738c8f495004f008ef0a"
             ],
-            "version": "==1.5.26"
+            "index": "pypi",
+            "version": "==2.0a4"
         },
         "pymunk": {
             "hashes": [
