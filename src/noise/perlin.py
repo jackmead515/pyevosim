@@ -157,3 +157,13 @@ class PerlinNoiseFactory(object):
             ret = r * 2 - 1
 
         return ret
+
+
+
+if __name__ == "__main__":
+
+    pnf = PerlinNoiseFactory(2, octaves=4, unbias=True)
+
+    data = pnf(0, 0)
+
+    print(pnf.gradient)

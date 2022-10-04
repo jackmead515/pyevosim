@@ -1,4 +1,5 @@
 
+from tkinter import N
 import numpy as np
 
 import constants
@@ -22,8 +23,25 @@ class Chunk:
     def get_chunk_position(self) -> np.array:
         return self.chunk_position
 
+
     def get_world_position(self) -> np.array:
         return self.chunk_position * constants.CHUNK_SIZE * constants.TILE_SIZE
+
+
+    def neighbors(self, tx, ty):
+        """
+        Returns the neighbors of the given tile position.
+        """
+        width = self.tiles.shape[0]
+        height = self.tiles.shape[1]
+
+        left = self.tiles[tx-1, ty] if tx > 0 else None
+        right = self.tiles[tx+1, ty] if tx < width - 1 else None
+        top = self.tiles[tx, ty-1] if ty > 0 else None
+        bottom = self.tiles[tx, ty+1] if ty < height - 1 else None
+
+        return top, right, bottom, left
+
 
     def iter_tiles(self):
         """
@@ -40,3 +58,7 @@ class Chunk:
 
     def __str__(self) -> str:
         return f"chunk ({self.chunk_position})"
+
+
+    def __eq__(self, __o: object) -> bool:
+        return np.array_equal(self.chunk_position, __o.chunk_position)

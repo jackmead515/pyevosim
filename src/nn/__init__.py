@@ -1,4 +1,4 @@
-from numba import jit, cuda, njit, prange
+from numba import jit
 import numpy as np
 
 
@@ -20,44 +20,27 @@ def softmax(x):
 
 @jit(nopython=True)
 def do_activation(x, activation):
-    if activation == 'sigmoid':
+    if activation == 1:
         return sigmoid(x)
-    elif activation == 'relu':
+    elif activation == 2:
         return relu(x)
-    elif activation == 'softmax':
+    elif activation == 3:
         return softmax(x)
     else:
         return x
 
 
-@cuda.jit(device=True)
-def gpu_compute(inputs, weights, bias, activation):
-    return do_activation(np.dot(weights, inputs) + bias, activation)
-
-
 @jit(nopython=True)
-def cpu_compute(inputs, weights, bias, activation):
-    return do_activation(np.dot(weights, inputs) + bias, activation)
+def compute(inputs, weights, bias, activation):
+    return do_activation(np.dot(inputs, weights) + bias, activation)
 
 
-@cuda.jit(cache=True)
-def gpu_compute_layers(layers, inputs):
-    interm = None
-    index = cuda.grid(1)
-    if index < len(layers):
-        layer = layers[index]
-        if index == 0:
-            interm = gpu_compute(layer.weights, inputs, layer.bias, layer.activation)
-        else:
-            interm = gpu_compute(layer.weights, interm, layer.bias, layer.activation)
-    return interm
-
-
-def cpu_compute_layers(layers, inputs):
+def compute_layers(layers, inputs):
     inputs /= np.linalg.norm(inputs)
+    interm = None
     for index, layer in enumerate(layers):
         if index == 0:
-            interm = cpu_compute(inputs, layer[0], layer[1], layer[2])
+            interm = compute(inputs, layer[0], layer[1], layer[2])
         else:
-            interm = cpu_compute(interm, layer[0], layer[1], layer[2])
+            interm = compute(interm, layer[0], layer[1], layer[2])
     return interm

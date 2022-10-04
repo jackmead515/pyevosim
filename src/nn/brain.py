@@ -1,32 +1,51 @@
-from dataclasses import dataclass
-import time
 import random
-from multiprocessing import Pool
-from concurrent.futures import ThreadPoolExecutor
+import sys
 
-from nn import gpu_compute_layers, cpu_compute_layers
+sys.path.append('..')
+
+from nn import compute_layers
 
 import numpy as np
+
+activations = [('relu', 1), ('sigmoid', 2), ('softmax', 3)]
+
+
+def random_brain(inputs, outputs):
+    architecture = []
+
+    ra = random.choice(activations)
+    hl1 = random.randint(inputs, 50)
+    architecture.append((inputs, hl1, ra[1]))
+
+    ra = random.choice(activations)
+    hl2 =  random.randint(outputs, hl1)
+    architecture.append((hl1, hl2, ra[1]))
+
+    ra = random.choice(activations)
+    architecture.append((hl2, outputs, ra[1]))
+
+    return Brain(architecture)
+
 
 class Brain:
 
     def __init__(self, architecture):
+        """
+        architecture: [
+            (input_size, hidden_size, activation_function),
+        ]
+        """
         self.layers = []
         for inputs, outputs, activation in architecture:
             self.layers.append([
-                np.random.rand(outputs, inputs), #weights
-                np.random.rand(outputs, 1), #bias
+                np.array(np.random.rand(inputs, outputs), dtype=np.float32) - 0.5, #weights
+                np.array(np.random.rand(1, outputs), dtype=np.float32) - 0.5, #bias
                 activation #activation
             ])
 
 
     def compute(self, inputs):
-        # threads = 32
-        # nblocks = (len(self.layers) // threads) + 1
-        # config = (nblocks), (threads)
-        # return gpu_compute_layers[config](self.layers, inputs)
-
-        return cpu_compute_layers(self.layers, inputs)
+        return compute_layers(self.layers, inputs)
 
 
     def evolve(self):
@@ -58,42 +77,16 @@ class Brain:
 
 if __name__ == "__main__":
 
+    inputs = [np.random.random() for i in range(5)]
 
-    inputs = np.zeros((100, 1))
+    print(inputs)
 
     brain = Brain([
-        (100, 50, 'relu'),
+        (5, 50, 'relu'),
         (50, 25, 'sigmoid'),
-        (25, 5, 'softmax')
+        (25, 5, 'sigmoid'),
     ])
 
-    for i in range(100):
-        choices = brain.compute(inputs)
-        select = np.argmax(choices)
-        print(choices, select)
-        brain.evolve()
-    exit()
+    outputs = brain.compute(inputs)
 
-    brains = []
-    for i in range(100):
-        brain = Brain([
-            (100, 50, 'relu'),
-            (50, 25, 'sigmoid'),
-            (25, 5, 'softmax')
-        ])
-        brains.append(brain)
-
-    averages = np.zeros(1000)
-    start_time = time.time()
-    for i in range(1000):
-       start = time.time()
-       for brain in brains:
-           select = np.argmax(brain.compute(inputs))
-       averages[i] = time.time() - start
-
-    print('total', time.time() - start_time)
-    print('avg', np.average(averages))
-
-    for i in range(10000):
-       print([chr(c) for c in brains[0].code()])
-       brains[0].evolve()
+    print(outputs)

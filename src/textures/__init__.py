@@ -1,21 +1,36 @@
 from dataclasses import dataclass
+import yaml
+import os
 
+from tqdm import tqdm
 import pyglet as pg
 from pyglet.image import TextureRegion, load as load_image
 
 @dataclass
 class TextureManager():
 
-    WATER_TILE: TextureRegion
-    GRASS_TILE: TextureRegion
-    DIRT_TILE: TextureRegion
-
     def __init__(self):
         pass
 
     def load(self):
-        self.WATER_TILE = load_image("assets/nature_tileset/sprite_015.png")
-        self.GRASS_TILE = load_image("assets/nature_tileset/sprite_019.png")
-        self.DIRT_TILE = load_image("assets/nature_tileset/sprite_021.png")
+        texture_map = "assets/texture_map.yml"
+
+        if not os.path.exists(texture_map):
+            raise FileNotFoundError(f"Texture map not found: {texture_map}")
+        
+        with open(texture_map, "r") as f:
+            texture_map = yaml.safe_load(f)
+
+        for texture_name in tqdm(texture_map["textures"]):
+
+            texture_path = os.path.join("assets", texture_map["textures"][texture_name])
+
+            if not os.path.exists(texture_path):
+                raise FileNotFoundError(f"Texture not found: {texture_path}")
+
+            texture_image = load_image(texture_path)
+
+            setattr(self, texture_name, texture_image)
+
 
 texture_manager = TextureManager()

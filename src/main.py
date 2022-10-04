@@ -99,6 +99,10 @@ if __name__ == "__main__":
         game.draw()
 
     @game.window.event
+    def on_mouse_motion(x, y, dx, dy):
+        game.on_mouse_motion(x, y, dx, dy)
+
+    @game.window.event
     def on_key_press(symbol, modifiers):
         game.on_key_press(symbol, modifiers)
 
@@ -108,8 +112,11 @@ if __name__ == "__main__":
     
     @game.window.event
     def on_mouse_scroll(x, y, scroll_x, scroll_y):
-        print(x, y, scroll_x, scroll_y)
         game.on_mouse_scroll(x, y, scroll_x, scroll_y)
+
+    @game.window.event
+    def on_mouse_press(x, y, button, modifiers):
+        game.on_mouse_press(x, y, button, modifiers)
 
     pg.clock.schedule_interval(game.update, 1 / 30.0)
     pg.app.run()

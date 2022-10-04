@@ -18,15 +18,15 @@ class Player:
             int(self.position[1] // constants.CHUNK_TILE_SIZE)
         ])
     
-        self.speed = 500.0
+        self.speed = 200.0
 
-        self.sprite = sprites.load_sprite(texture_manager.WATER_TILE, self.position[0], self.position[1])
+        self.animation = pg.resource.animation('assets/player/walk_down.gif')
+        self.sprite = sprites.load_sprite(self.animation, self.position[0], self.position[1])
 
 
     def on_key_press(self, symbol, modifiers):
         if symbol == pg.window.key.W:
             self.velocity[1] = self.speed
-            print('accelerating up')
         elif symbol == pg.window.key.S:
             self.velocity[1] = -self.speed
         elif symbol == pg.window.key.A:
