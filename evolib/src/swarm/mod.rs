@@ -141,8 +141,8 @@ impl Swarm {
     /// Update the position of the target that the swarm should follow
     fn update_target(&mut self) {
         let time = self.now.elapsed().as_secs_f32();
-        let tx = (2.0 + (2.0 * time).cos()) * (3.0 * time).cos() * self.speed;
-        let ty = (2.0 + (2.0 * time).sin()) * (3.0 * time).sin() * self.speed;
+        let tx = (2.0 + (2.0 * time).cos()) * (3.0 * time).cos() * self.max_speed; 
+        let ty = (2.0 + (2.0 * time).sin()) * (3.0 * time).sin() * self.max_speed;
         self.target[0] = ty + self.target[4];
         self.target[1] = tx + self.target[5];
     }
