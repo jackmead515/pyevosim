@@ -7,6 +7,7 @@ import pyglet as pg
 from quads.qtree import QTree
 from sprites import load_sprite
 from textures import texture_manager
+import constants as c
 
 
 class PlantNetwork():
@@ -93,8 +94,10 @@ class PlantNetwork():
         # combine both vectors!
         vec = rvec + uvec
         vec /= np.linalg.norm(vec)
-
         new_pos = pos + (vec * np.random.uniform(50, 100))
+
+        # restrict position to a tile space. makes it look prettier
+        new_pos -= new_pos % c.TILE_SIZE
 
         _id = self.add_node(new_pos, node['type'])
         self.add_edge(id, _id)

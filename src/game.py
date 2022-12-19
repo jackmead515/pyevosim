@@ -32,7 +32,7 @@ class Game:
             self.creature_quad.insert((creature.position[0], creature.position[1]), creature.id)
 
         self.player = Player(100.0, 100.0)
-        self.swarm = Swarm(0.0, 0.0, 20)
+        self.swarm = Swarm(200.0, 200.0, 100)
         #self.plant = Plant(50.0, 50.0)
         self.plant_network = PlantNetwork(-1000, -1000, 1000, 1000, 100)
         

@@ -5,8 +5,9 @@ import pyglet as pg
 
 import numpy as np
 
-from swarm.util import update_swarm, get_fitness_values
-from swarm.util import P_X, P_Y
+from swarm.swarm import update_swarm, get_fitness_values, figure_eight_func
+from swarm.flock import update_flock
+from swarm.swarm import P_X, P_Y
 
 def random_color():
     return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
@@ -22,16 +23,16 @@ class Swarm():
         self.target = np.array([x, y], dtype=np.float32)
         self.particles = []
         self.batch = pg.graphics.Batch()
-        self.speed = 20
-        self.max_speed = 100
+        self.speed = 100.0
+        self.max_speed = 200.0
         self.spread = 200
 
         self.particles = []
         self.particle_sprites = []
 
         for _ in range(num_particles):
-            x = float(np.random.uniform(x-20.0, x+20.0))
-            y = float(np.random.uniform(y-20.0, y+20.0))
+            px = float(np.random.uniform(x-20.0, x+20.0))
+            py = float(np.random.uniform(y-20.0, y+20.0))
             c = pg.shapes.BorderedRectangle(
                 x, y, 4, 4,
                 border_color=(0, 0, 0),
@@ -42,7 +43,9 @@ class Swarm():
             c.anchor_y = 2
 
             # x, y, vx, vy, best_x, best_y, best_value
-            self.particles.append([x, y, 0.0, 0.0, x, y, 0.0])
+            vx = np.random.uniform(-1.0, 1.0) * self.speed
+            vy = np.random.uniform(-1.0, 1.0) * self.speed
+            self.particles.append([px, py, vx, vy, px, py, 0.0])
             self.particle_sprites.append(c)
         
         self.particles = np.array(self.particles, dtype=np.float32)
@@ -63,11 +66,19 @@ class Swarm():
         self.set_best_values()
     
         self.iterator += 0.1 * delta
-
-        self.target[0] = (2 + np.cos(2 * self.iterator)) * np.cos(3 * self.iterator) * self.spread
-        self.target[1] = (2 + np.sin(2 * self.iterator)) * np.sin(3 * self.iterator) * self.spread
+        self.target = figure_eight_func(self.iterator, self.spread)
         self.target_sprite.x = self.target[0]
         self.target_sprite.y = self.target[1]
+
+        # self.particles = update_flock(
+        #     self.particles,
+        #     self.target,
+        #     self.speed,
+        #     self.max_speed,
+        #     delta
+        # )
+
+        #print(self.particles)
 
         self.particles = update_swarm(
             self.particles,

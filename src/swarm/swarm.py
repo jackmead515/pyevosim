@@ -29,6 +29,14 @@ P_BV = 6 # best value
 
 
 @jit(nopython=True, fastmath=True)
+def figure_eight_func(index, spread):
+    return np.array([
+        (2 + np.cos(2 * index)) * np.cos(3 * index) * spread,
+        (2 + np.sin(2 * index)) * np.sin(3 * index) * spread
+    ], dtype=np.float32)
+
+
+@jit(nopython=True, fastmath=True)
 def standard_fitness(vec):
     return vec[0] ** 2 + vec[1] ** 2 + 1
 
@@ -53,7 +61,7 @@ def get_fitness_values(
 
 
 @jit(nopython=True, fastmath=True)
-def get_swarm_velocity(
+def get_swarm_force(
     particle,
     global_best_position,
     target_position,
@@ -73,13 +81,10 @@ def get_swarm_velocity(
     target_force = (target_position - position) * SWARM_TARGET_FACTOR
     target_force /= np.linalg.norm(target_force)
 
-    random_force = (np.random.random(2) - 1) * SWARM_RANDOM_FACTOR
+    #random_force = (np.random.random(2) - 1) * SWARM_RANDOM_FACTOR
 
-    total_velocity = (target_force + swarm_force + random_force)
-
-    total_velocity /= np.linalg.norm(total_velocity)
-
-    return total_velocity * speed
+    total_force = (target_force + swarm_force)
+    return total_force * speed / np.linalg.norm(total_force)
 
 
 @jit(nopython=True, fastmath=True, parallel=True)
@@ -95,7 +100,7 @@ def update_swarm(
 
     for i in prange(len(particles)):
         particle = particles[i]
-        velocity = get_swarm_velocity(
+        velocity = get_swarm_force(
             particle,
             global_best_position,
             target,

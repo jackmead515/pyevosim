@@ -4,7 +4,7 @@ import os
 
 from tqdm import tqdm
 import pyglet as pg
-from pyglet.image import TextureRegion, load as load_image
+from pyglet.image import load as load_image
 
 @dataclass
 class TextureManager():
