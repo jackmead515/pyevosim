@@ -39,9 +39,10 @@ impl Swarm {
         swarm_random_factor: f32,
         speed: f32,
         max_speed: f32,
+        total_creatures: usize,
     ) -> Self {
         let mut creatures = Vec::new();
-        for _ in 0..100 {
+        for _ in 0..total_creatures {
             creatures.push([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
         }
 

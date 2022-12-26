@@ -17,6 +17,8 @@ pyglet = "1.5.26"
 PyYAML = "6.0"
 networkx = "2.8.7"
 icc_rt = "2020.0.133"
+ursina = "5.1.0"
+screeninfo
 
 [dev-packages]
 
