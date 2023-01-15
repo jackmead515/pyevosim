@@ -17,5 +17,6 @@ class Plant(Sprite):
         self.shadow = Sprite(
             parent=self,
             texture=f'assets1_shadows/sprite_0{num}.png',
+            **kwargs
         )
             

@@ -30,6 +30,14 @@ class Player(SpriteSheetAnimation):
             position=(0.0,-0.1,0),
         )
 
+        self.selector = Entity(
+            model=Quad(mode='line'),
+            color=color.black,
+            scale=(1,1,1),
+            alpha=0.2,
+            z=-1
+        )
+
         self.body = pm.Body()      
         self.body.position = kwargs.get('position')
         self.body.velocity = (0,0)
@@ -45,11 +53,23 @@ class Player(SpriteSheetAnimation):
         self.is_dashing = False
         self.dash_direction = Vec2(0,0)
 
+        self.current_animation = 'idle_right'
+
+    
+    def play_animation(self, animation):
+        super().play_animation(animation)
+        self.current_animation = animation
+
 
     def update(self):
         x, y = self.body.position[0], self.body.position[1] + 0.1
         self.set_position((x, y, 0)) 
         self.update_hand()
+
+        mp = self.hand.world_position
+        self.selector.position = mp
+        self.selector.x = round(self.selector.x, 0)
+        self.selector.y = round(self.selector.y, 0)
 
 
     def update_velocity(self):
