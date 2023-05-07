@@ -1,4 +1,5 @@
 from ursina import *
+from ursina.shaders import lit_with_shadows_shader
 import evolib as ev
 
 creature_shader = Shader(name='creature_shader', language=Shader.GLSL,
@@ -50,6 +51,7 @@ class Swarm:
                 texture='swarm',
                 color=color.red,
                 position=(p[0], p[1], 0),
+                shader=lit_with_shadows_shader,
                 #shader=creature_shader,
             )
             #c.set_shader_input('position', (p[0], p[1]))

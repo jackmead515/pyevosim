@@ -2,9 +2,9 @@ from ursina import Sprite
 
 import random
 
-def create_random_plant():
+def create_random_plant(**kwargs):
     r = random.randint(84, 87)
-    return Plant(r)
+    return Plant(r, **kwargs)
 
 class Plant(Sprite):
     def __init__(self, num, **kwargs):

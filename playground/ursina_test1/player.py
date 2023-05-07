@@ -19,16 +19,29 @@ class Player(SpriteSheetAnimation):
         )
 
         self.hand = Sprite(
+            shader=kwargs.get('shader'),
             texture='circle',
-            # tan
             color=color.rgb(210, 193, 177),
             parent=self,
             model='quad',
             scale=(0.2,0.2),
-            # rotate 90s
             rotation=(0,0,90),
             position=(0.0,-0.1,0),
         )
+
+        self.light = SpotLight(
+            position=(20,20,-2),
+            color=color.rgb(252, 239, 112),
+            shadows=True,
+            z=-10,
+            y=0,
+            x=0
+        )
+        self.light.look_at(self.hand)
+        self.light.add_script(SmoothFollow(
+            target=self.hand,
+            offset=[0,0,-10],
+        ))
 
         self.selector = Entity(
             model=Quad(mode='line'),
